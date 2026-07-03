@@ -1,7 +1,21 @@
 node_modules/
 dist/
+
+# VitePress 构建缓存
 .vitepress/cache/
 .vitepress/dist/
+.vitepress/.temp/
+
+# docs/ 是由 prepare-docs 从 content/ 派生的构建树，不入 git
+docs/
+
+# sidebar 由 generate-sidebar 派生
+.vitepress/sidebars.generated.json
+
+# 翻译增量缓存（含源 hash，不入 git）
+content/.i18n-cache/
+
+# 本地预览服务器
 .site-server.pid
 .site-server.pid.port
 .site-server.log
@@ -11,3 +25,5 @@ npm-debug.log*
 CLAUDE.md
 AGENTS.md
 
+# 临时方案文件
+i18n-plan.md

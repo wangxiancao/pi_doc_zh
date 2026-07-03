@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// sync-pi-docs.mjs — 上游 Pi docs -> content/en/（英文内容源）
+// 边界：只负责 content/en。不生成 docs/、不翻译、不改 VitePress 配置。
 import {
   cpSync,
   existsSync,
@@ -22,7 +24,7 @@ const projectRoot = resolve(import.meta.dirname, "..");
 const piRoot = resolve(process.cwd(), piRootArg);
 const sourceDocs = resolve(piRoot, "packages/coding-agent/docs");
 const docsJson = resolve(sourceDocs, "docs.json");
-const targetDocs = resolve(projectRoot, "docs");
+const targetEn = resolve(projectRoot, "content/en");
 
 if (!existsSync(docsJson)) {
   console.error(`Could not find Pi docs at: ${sourceDocs}`);
@@ -30,23 +32,23 @@ if (!existsSync(docsJson)) {
   process.exit(1);
 }
 
-rmSync(targetDocs, { recursive: true, force: true });
-mkdirSync(targetDocs, { recursive: true });
-cpSync(sourceDocs, targetDocs, { recursive: true });
+// 清空重建 content/en/
+rmSync(targetEn, { recursive: true, force: true });
+mkdirSync(targetEn, { recursive: true });
+cpSync(sourceDocs, targetEn, { recursive: true });
 
-// Adapt upstream image references to VitePress's public/ static-asset model.
-// Upstream Markdown uses HTML <img src="images/..."> with a sibling images/ dir,
-// which Vite/Rollup cannot resolve at build time. Move images/ under public/ and
-// rewrite the relative refs to absolute "/images/..." so they resolve correctly.
-const imagesDir = resolve(targetDocs, "images");
+// 图片适配：上游 images/ 是与 md 同级的目录，HTML <img src="images/..."> 的相对引用
+// 会让 Rollup 构建失败。把 images/ 移到 public/images/，并把 src 重写为绝对 /images/...，
+// VitePress 会在构建时按 base 自动加前缀。
+const imagesDir = resolve(targetEn, "images");
 if (existsSync(imagesDir)) {
-  const publicDir = resolve(targetDocs, "public");
+  const publicDir = resolve(targetEn, "public");
   mkdirSync(publicDir, { recursive: true });
   renameSync(imagesDir, resolve(publicDir, "images"));
 
-  for (const file of readdirSync(targetDocs)) {
+  for (const file of readdirSync(targetEn)) {
     if (!file.endsWith(".md")) continue;
-    const filePath = resolve(targetDocs, file);
+    const filePath = resolve(targetEn, file);
     const original = readFileSync(filePath, "utf8");
     const updated = original
       .replace(/src="(images\/)/g, 'src="/$1')
@@ -58,5 +60,5 @@ if (existsSync(imagesDir)) {
 }
 
 console.log(`Synced Pi docs from ${sourceDocs}`);
-console.log(`Wrote docs to ${targetDocs}`);
-
+console.log(`Wrote English source to ${targetEn}`);
+console.log(`If upstream changed, re-run: npm run translate -- zh`);
