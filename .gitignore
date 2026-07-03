@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.vitepress/cache/
+.vitepress/dist/
+.site-server.pid
+.site-server.pid.port
+.site-server.log
+npm-debug.log*
+

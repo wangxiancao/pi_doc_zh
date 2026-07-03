@@ -1,0 +1,19 @@
+{
+  "name": "pi-doc",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "node scripts/sync-pi-docs.mjs",
+    "generate-sidebar": "node scripts/generate-sidebar.mjs",
+    "prebuild": "npm run generate-sidebar",
+    "build": "vitepress build",
+    "dev": "npm run generate-sidebar && vitepress dev --host 127.0.0.1",
+    "preview": "vitepress preview --host 127.0.0.1"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
