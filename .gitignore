@@ -7,3 +7,7 @@ dist/
 .site-server.log
 npm-debug.log*
 
+# Local-only agent guidance — kept for local tooling, not published to the repo
+CLAUDE.md
+AGENTS.md
+

@@ -2,6 +2,8 @@
 
 This repository is a self-hosted documentation template for the Pi project.
 
+**Live site:** <https://wangxiancao.github.io/pi_doc_zh/>
+
 It does not try to reproduce the official `pi.dev` website. The official site
 uses a separate website implementation that is not included in
 `earendil-works/pi`. This template only builds the open Markdown documentation
@@ -131,6 +133,11 @@ Those pieces are outside the public Pi repository.
 ## Troubleshooting
 
 If the site builds but links are broken on GitHub Pages, check `SITE_BASE`.
+
+If the site returns 404 right after enabling Pages, GitHub may have added a starter
+workflow `static.yml` ("Deploy static content to Pages") that deploys the repo root
+with no build step — and `dist/` is gitignored, so the root has no `index.html`.
+Delete `.github/workflows/static.yml`, keep only `pages.yml`, then push to `main`.
 
 If the sidebar is missing, run:
 
