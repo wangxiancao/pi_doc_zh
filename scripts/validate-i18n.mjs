@@ -111,14 +111,14 @@ for (const loc of locales) {
     }
   }
 
-  // 4. 站内链接（完整 locale 为 ERROR）
+  // 4. 站内链接（完整 locale 为 ERROR；英文源同位置也断则视为上游固有问题，跳过）
   for (const f of lMd) {
     const text = readFileSync(resolve(ldir, f), "utf8");
     for (const link of extractMdLinks(text)) {
       const target = resolve(ldir, link);
-      if (!existsSync(target)) {
-        errors.push(`[${loc.key}] ${f}: 站内链接 "${link}" 目标不存在`);
-      }
+      if (existsSync(target)) continue;
+      if (!existsSync(resolve(contentDir, "en", link))) continue;
+      errors.push(`[${loc.key}] ${f}: 站内链接 "${link}" 目标不存在`);
     }
   }
 }

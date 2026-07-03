@@ -32,6 +32,7 @@ function slugify(s) {
 // 提取非围栏内的标题，返回 [{text, slug}]
 function extractHeadings(text) {
   const out = [];
+  const seen = new Map();
   let inFence = false;
   for (const line of text.split("\n")) {
     if (/^```/.test(line)) {
@@ -40,7 +41,14 @@ function extractHeadings(text) {
     }
     if (inFence) continue;
     const m = /^(#{1,6})\s+(.+?)\s*$/.exec(line);
-    if (m) out.push({ text: m[2], slug: slugify(m[2]) });
+    if (!m) continue;
+    // 去掉原文已有显式 anchor（如有），避免参与 slugify
+    const raw = m[2].replace(/\s*\{#[^}]+\}\s*$/, "").trim();
+    const base = slugify(raw);
+    const n = seen.get(base) || 0;
+    seen.set(base, n + 1);
+    // 重复 slug 加后缀（与 VitePress 自动 slug 一致），保证显式 id 唯一
+    out.push({ text: m[2], slug: n === 0 ? base : `${base}-${n}` });
   }
   return out;
 }
